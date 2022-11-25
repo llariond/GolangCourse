@@ -5,18 +5,18 @@ import (
 	"sync"
 )
 
-type safeMap struct {
+type safeMap[K comparable, V any] struct {
 	mut sync.Mutex
-	m map[int64]int64 //make it template?
+	m map[K]V
 }
 
-func NewSafeMap() (*safeMap, error) {
-	return &safeMap{
-		m : make(map[int64]int64),
+func NewSafeMap[K comparable, V any]() (*safeMap[K, V], error) {
+	return &safeMap[K,V]{
+		m : make(map[K]V),
 	}, nil
 }
 
-func (sm *safeMap) At(key int64) (int64, bool) {
+func At[K comparable, V any](sm *safeMap[K,V], key K) (V, bool) {
 	sm.mut.Lock()
 	defer sm.mut.Unlock()
 
@@ -24,23 +24,23 @@ func (sm *safeMap) At(key int64) (int64, bool) {
 	return v, ok
 }
 
-func (sm *safeMap) Add(key int64, val int64) {
+func Add[K comparable, V any](sm *safeMap[K,V], key K, val V) {
 	sm.mut.Lock()
 	defer sm.mut.Unlock()
 
 	sm.m[key] = val
 }
 
-func (sm *safeMap) Delete(key int64) {
+func Delete[K comparable, V any](sm *safeMap[K,V], key K) {
 	sm.mut.Lock()
 	defer sm.mut.Unlock()
 	delete(sm.m, key)
 }
 
-func (sm *safeMap) GetKeys() []int64 {
+func GetKeys[K comparable, V any](sm *safeMap[K,V]) []K {
 	sm.mut.Lock()
 	defer sm.mut.Unlock()
-	keys := make([]int64, len(sm.m))
+	keys := make([]K, len(sm.m))
 	
 	for k,_ := range(sm.m) {
 		keys = append(keys, k)
@@ -49,10 +49,10 @@ func (sm *safeMap) GetKeys() []int64 {
 	return keys
 }
 
-func (sm *safeMap) GetValues() []int64 {
+func GetValues[K comparable, V any](sm *safeMap[K,V]) []V {
 	sm.mut.Lock()
 	defer sm.mut.Unlock()
-	vals := make([]int64, len(sm.m))
+	vals := make([]V, len(sm.m))
 	
 	for _,v := range(sm.m) {
 		vals = append(vals, v)
@@ -61,11 +61,11 @@ func (sm *safeMap) GetValues() []int64 {
 	return vals
 }
 
-func (sm *safeMap) GetRanges() ([]int64, []int64) {
+func GetRanges[K comparable, V any] (sm *safeMap[K,V]) ([]K, []V) {
 	sm.mut.Lock()
 	defer sm.mut.Unlock()
-	keys := make([]int64, len(sm.m))
-	vals := make([]int64, len(sm.m))
+	keys := make([]K, len(sm.m))
+	vals := make([]V, len(sm.m))
 	
 	for k,v := range(sm.m) {
 		keys = append(keys, k)
@@ -75,31 +75,14 @@ func (sm *safeMap) GetRanges() ([]int64, []int64) {
 	return keys, vals
 }
 
-func testRead(m *safeMap, n int64) {
-	var cnt int64 = 0
-    for {
-        v,_ := m.At(cnt)
-		v++ //just to make some use of variable
-		cnt++
-		if (cnt > n) {
-			cnt = 0
-		}
-    }
-}
-
-func testWrite(m *safeMap, n int64) {
-	var cnt int64 = 0
-    for {
-        m.Add(cnt, cnt)
-		cnt++
-		if (cnt > n) {
-			cnt = 0
-		}
-    }
-}
-
 func main() {
-	//just a placeholder
-	//testing (start with -race)
-	testMapP, _ := NewSafeMap() //a pointer to struct
+	testMapP, _ := NewSafeMap[int64, int64]() //a pointer to struct
+
+	Add[int64,int64](testMapP, 10, 1124)
+	fmt.Println(At[int64, int64](testMapP, 10))
+	fmt.Println(At[int64, int64](testMapP, 11))
+
+	//QUESTION: HOW TO CHANGE FROM Add[type, type](....) to testMapP.Add() ??
+
+	fmt.Print("END")
 }
