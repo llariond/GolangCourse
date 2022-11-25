@@ -2,12 +2,18 @@ package main
 
 import (
 	"fmt"
-	"time"
 )
+
+//https://api.coingecko.com/api/v3/coins/list
+
+/*примеры запросов:
+см фото кода сегодня
+
+*/
 
 func main() {
 
-	var nSec int
+/*	var nSec int
 	fmt.Println("Enter timeout(sec):")
 	fmt.Scanf("%d", &nSec)
 	fmt.Println("Timeout:", nSec, "sec")
@@ -38,8 +44,8 @@ func main() {
 			for i := len(reqtimes) - 2; i >= 0; i--{
 				if ctime.Sub(reqtimes[i]) > timeout {
 					fmt.Println("Time remove", reqtimes[i])
-					requests = requests[i+1:]
-					reqtimes = reqtimes[i+1:]
+					requests = requests[i+1:len(requests)]
+					reqtimes = reqtimes[i+1:len(reqtimes)]
 					break
 				}
 			}
@@ -59,6 +65,6 @@ func main() {
 			fmt.Println("ACCEPTED:",req, ctime)
 		}
 	}
-
+*/
 	fmt.Println("Finished")
 }

@@ -78,9 +78,9 @@ func GetRanges[K comparable, V any] (sm *safeMap[K,V]) ([]K, []V) {
 func main() {
 	testMapP, _ := NewSafeMap[int64, int64]() //a pointer to struct
 
-	Add[int64,int64](testMapP, 10, 1124)
-	fmt.Println(At[int64, int64](testMapP, 10))
-	fmt.Println(At[int64, int64](testMapP, 11))
+	Add(testMapP, 10, 1124)
+	fmt.Println(At(testMapP, 10))
+	fmt.Println(At(testMapP, 11))
 
 	//QUESTION: HOW TO CHANGE FROM Add[type, type](....) to testMapP.Add() ??
 
